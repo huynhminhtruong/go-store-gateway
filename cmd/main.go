@@ -2,11 +2,13 @@ package main
 
 import (
 	"log"
+
+	"github.com/huynhminhtruong/go-store-services/book-service/src/services/book"
 )
 
-// type Adapter struct {
-// 	storing book.BookClient // This comes from generated Go source
-// }
+type Adapter struct {
+	storing book.BookClient // This comes from generated Go source
+}
 
 // func NewAdapter(paymentServiceUrl string) (*Adapter, error) {
 // 	var opts []grpc.DialOption                                                    // Data model for connection configurations
