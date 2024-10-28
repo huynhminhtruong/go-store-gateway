@@ -1,6 +1,8 @@
 package main
 
-import "log"
+import (
+	"log"
+)
 
 // type Adapter struct {
 // 	storing book.BookClient // This comes from generated Go source
