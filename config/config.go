@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -25,8 +26,10 @@ func GetApplicationPort() int {
 	return port
 }
 
-func GetBookServiceUrl() string {
-	return getEnvironmentValue("BOOK_SERVICE_URL") // This will be in the Book service env params
+func GetServiceURL(ipSrv, portSrv string) string {
+	ip := getEnvironmentValue(ipSrv)
+	port := getEnvironmentValue(portSrv)
+	return fmt.Sprintf("%s:%s", ip, port)
 }
 
 func getEnvironmentValue(key string) string { // Validates env param exists and gets it

@@ -11,20 +11,28 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+const (
+	BOOK_IP_KEY   = "BOOK_IP"
+	BOOK_PORT_KEY = "BOOK_PORT"
+)
+
 type Adapter struct {
 	bookSrv book.BookClient // This comes from generated Go source
 }
 
-func NewAdapter(paymentServiceUrl string) (*Adapter, error) {
-	var opts []grpc.DialOption                                                    // Data model for connection configurations
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials())) // This is for disabling TLS
-	conn, err := grpc.NewClient(paymentServiceUrl, opts...)                       // Connect to service
+func NewAdapter(bookServiceUrl string) (*Adapter, error) {
+	// Data model for connection configurations
+	var opts []grpc.DialOption
+	// This is for disabling TLS
+	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// Connect to service
+	conn, err := grpc.NewClient(bookServiceUrl, opts...)
 
 	if err != nil {
 		return nil, err
 	}
 	defer conn.Close()                 // Always close the connection before quitting the function
-	client := book.NewBookClient(conn) // Initializes the new payment stub instance
+	client := book.NewBookClient(conn) // Initializes the new book stub instance
 	return &Adapter{bookSrv: client}, nil
 }
 
@@ -38,9 +46,9 @@ func (a *Adapter) AddBook(data *domain.Book) error {
 }
 
 func main() {
-	_, err := NewAdapter(config.GetBookServiceUrl()) // The payment endpoint is available on the config object
+	_, err := NewAdapter(config.GetServiceURL(BOOK_IP_KEY, BOOK_PORT_KEY))
 	if err != nil {
-		log.Fatalf("Failed to initialize payment stub. Error: %v", err) // The Order service will not run without the payment config
+		log.Fatalf("Failed to initialize book stub. Error: %v", err)
 	}
 	// application := api.NewApplication(dbAdapter, paymentAdapter) // The payment adapter is now a must-have parameter
 	// grpcAdapter := grpc.NewAdapter(application, config.GetApplicationPort())
