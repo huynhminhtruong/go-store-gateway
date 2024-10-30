@@ -76,14 +76,19 @@ import (
     "context"
     "log"
     "net/http"
+    "os"
+
     "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
     "google.golang.org/grpc"
     pb "path/to/bookstore/protos"  // Đường dẫn tới file generated .pb.go
 )
 
 func main() {
-    // Thiết lập địa chỉ của gRPC service
-    grpcServerEndpoint := "localhost:50051"
+    // Lấy gRPC server endpoint từ biến môi trường
+    grpcServerEndpoint := os.Getenv("GRPC_SERVER_ENDPOINT")
+    if grpcServerEndpoint == "" {
+        log.Fatal("GRPC_SERVER_ENDPOINT environment variable is not set")
+    }
 
     // Tạo HTTP router để nhận request HTTP
     mux := runtime.NewServeMux()
