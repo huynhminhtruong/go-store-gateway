@@ -161,3 +161,8 @@ docker-compose up -d
 Bây giờ, từ máy client, bạn có thể gửi yêu cầu HTTP tới `http://<host_ip>:8081/v1/book/{book_id}` và `gateway` sẽ tự động chuyển tiếp yêu cầu tới gRPC server `book` qua cổng `50051`
 
 Cấu hình trên giúp tạo một Gateway cho phép chuyển đổi giữa HTTP và gRPC, phù hợp cho các client không hỗ trợ gRPC trực tiếp như trình duyệt hoặc các ứng dụng HTTP
+
+### 9. Khi package import bị lỗi hoặc code mới của package chưa được update thử các cách sau
+
+- go mod tidy
+- go get -u <package-url-or-name>
