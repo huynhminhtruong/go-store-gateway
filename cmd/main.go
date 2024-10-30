@@ -13,23 +13,32 @@ import (
 )
 
 func main() {
-	// get gRPC server endpoint from environment variables
+	// Get gRPC server endpoint from environment variables
 	grpcServerEndpoint := os.Getenv("BOOK_GRPC_SERVER_ENDPOINT")
 	if grpcServerEndpoint == "" {
 		log.Fatal("BOOK_GRPC_SERVER_ENDPOINT environment variable is not set")
 	}
 
-	// creat HTTP router to get request HTTP
+	// Creat HTTP router to get request HTTP
 	mux := runtime.NewServeMux()
 
-	// make a connection to gRPC server
-	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	err := book.RegisterBookServiceHandlerFromEndpoint(context.Background(), mux, grpcServerEndpoint, opts)
+	// Create a client connection to the gRPC server we just started
+	// This is where the gRPC-Gateway proxies the requests
+	conn, err := grpc.NewClient(
+		"book:8082",
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
-		log.Fatalf("Failed to start HTTP server: %v", err)
+		log.Fatalln("Failed to book server:", err)
 	}
 
-	log.Println("Starting HTTP server on :8081")
+	// Register Book Service
+	err = book.RegisterBookServiceHandler(context.Background(), mux, conn)
+	if err != nil {
+		log.Fatalf("Failed to register gateway server: %v", err)
+	}
+
+	log.Println("Starting HTTP gRPC-Gateway server on :8081")
 	if err := http.ListenAndServe(":8081", mux); err != nil {
 		log.Fatalf("Failed to serve HTTP server: %v", err)
 	}
