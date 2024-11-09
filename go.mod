@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.23.0
-	github.com/huynhminhtruong/go-store-services/book-service v0.0.0-20241030101542-8624f555468e
+	github.com/huynhminhtruong/go-store-services/book-service v0.0.0-20241106181111-ab87d6e6441b
 	github.com/huynhminhtruong/go-store-user v0.0.0-20241108153828-731dec68dcb4
 	google.golang.org/grpc v1.68.0
 )

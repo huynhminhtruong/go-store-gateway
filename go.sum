@@ -6,6 +6,8 @@ github.com/grpc-ecosystem/grpc-gateway/v2 v2.23.0 h1:ad0vkEBuk23VJzZR9nkLVG0YAoN
 github.com/grpc-ecosystem/grpc-gateway/v2 v2.23.0/go.mod h1:igFoXX2ELCW06bol23DWPB5BEWfZISOzSP5K2sbLea0=
 github.com/huynhminhtruong/go-store-services/book-service v0.0.0-20241030101542-8624f555468e h1:QTbKo/dMV9I4476UrIUZr1+0EuDZTLpugX/Rq6byum8=
 github.com/huynhminhtruong/go-store-services/book-service v0.0.0-20241030101542-8624f555468e/go.mod h1:/tYmV4vLBBuP21636aR+blm1B1lQYdgCPL0IzMDBq8Q=
+github.com/huynhminhtruong/go-store-services/book-service v0.0.0-20241106181111-ab87d6e6441b h1:BVa9f82k9mOkWZyI9S/lv2pGvnsxFfzTKc5rgltKkRY=
+github.com/huynhminhtruong/go-store-services/book-service v0.0.0-20241106181111-ab87d6e6441b/go.mod h1:/tYmV4vLBBuP21636aR+blm1B1lQYdgCPL0IzMDBq8Q=
 github.com/huynhminhtruong/go-store-user v0.0.0-20241108153828-731dec68dcb4 h1:nxaDtMVPt+gVP2LPe9dMfw9i2P1qzO8OoHC2plO75S8=
 github.com/huynhminhtruong/go-store-user v0.0.0-20241108153828-731dec68dcb4/go.mod h1:+0Obc0sqiiqfxpbrMIXZ6wu91sziw2mjk15xkiZIsvY=
 golang.org/x/net v0.30.0 h1:AcW1SDZMkb8IpzCdQUaIq2sP4sZ4zw+55h6ynffypl4=
