@@ -2,7 +2,7 @@
 
 Để tạo một **gateway** nhận các RESTful HTTP API request và chuyển tiếp chúng tới các gRPC service phù hợp, bạn có thể sử dụng **gRPC-Gateway**, một công cụ cho phép tự động chuyển đổi các HTTP JSON request thành gRPC và ngược lại. Đây là quy trình cơ bản để thiết lập
 
-### 1. Thiết lập cấu trúc gRPC Gateway
+## 1. Thiết lập cấu trúc gRPC Gateway
 
 Giả sử bạn đã có các service `book` và `book-shipping` được định nghĩa bằng gRPC. Chúng ta sẽ tạo một gRPC Gateway để:
 
@@ -10,7 +10,7 @@ Giả sử bạn đã có các service `book` và `book-shipping` được đị
 - Chuyển đổi các yêu cầu này thành gRPC và gửi chúng tới service tương ứng
 - Nhận phản hồi từ gRPC service và chuyển thành HTTP JSON trả về cho client
 
-### 2. Định nghĩa API bằng Protocol Buffers
+### 1. Định nghĩa API bằng Protocol Buffers
 
 Đầu tiên, xác định file `.proto` cho các service của bạn với các định nghĩa cần thiết:
 
@@ -43,7 +43,7 @@ message ListBooksResponse {
 }
 ```
 
-### 3. Cài đặt gRPC-Gateway
+### 2. Cài đặt gRPC-Gateway
 
 Sử dụng các công cụ `protoc-gen-go-grpc` và `protoc-gen-grpc-gateway` để tự động tạo các file cần thiết. Chạy các lệnh sau để cài đặt nếu bạn chưa có:
 
@@ -53,7 +53,7 @@ go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
 ```
 
-### 4. Tạo mã nguồn từ file .proto
+### 3. Tạo mã nguồn từ file .proto
 
 Chạy lệnh sau để tạo mã nguồn Go cho gRPC server và gRPC-Gateway:
 
@@ -65,7 +65,7 @@ protoc -I . \
   bookstore.proto
 ```
 
-### 5. Cấu hình gRPC Gateway trong Go
+### 4. Cấu hình gRPC Gateway trong Go
 
 Tạo một file `main.go` cho Gateway để nhận HTTP request và chuyển tiếp tới gRPC server
 
@@ -107,7 +107,7 @@ func main() {
 }
 ```
 
-### 6. Cấu hình Docker Compose cho gRPC Gateway
+### 5. Cấu hình Docker Compose cho gRPC Gateway
 
 Cập nhật file `docker-compose.yml` để bao gồm gateway với cấu hình HTTP và gRPC:
 
@@ -148,7 +148,7 @@ networks:
     driver: bridge
 ```
 
-### 7. Khởi động dịch vụ
+### 6. Khởi động dịch vụ
 
 Chạy lệnh sau để khởi động các dịch vụ:
 
@@ -156,13 +156,129 @@ Chạy lệnh sau để khởi động các dịch vụ:
 docker-compose up -d
 ```
 
-### 8. Kiểm tra
+### 7. Kiểm tra
 
 Bây giờ, từ máy client, bạn có thể gửi yêu cầu HTTP tới `http://<host_ip>:8081/v1/book/{book_id}` và `gateway` sẽ tự động chuyển tiếp yêu cầu tới gRPC server `book` qua cổng `50051`
 
 Cấu hình trên giúp tạo một Gateway cho phép chuyển đổi giữa HTTP và gRPC, phù hợp cho các client không hỗ trợ gRPC trực tiếp như trình duyệt hoặc các ứng dụng HTTP
 
-### 9. Khi package import bị lỗi hoặc code mới của package chưa được update thử các cách sau
+## 2. Khi package import bị lỗi hoặc code mới của package chưa được update thử các cách sau
 
 - go mod tidy
 - go get -u <package-url-or-name>
+
+## 3. Handle multiple gRPC-services trong gateway
+Nếu bạn có tới 100 service, việc đăng ký thủ công từng service sẽ trở nên rất phức tạp và dễ gây lỗi. Trong trường hợp này, bạn nên chuyển sang cách tự động hóa việc đăng ký các service bằng cách sử dụng một cấu hình động và một số kỹ thuật tối ưu hóa mã để quản lý số lượng lớn service. Dưới đây là một cách tiếp cận hiệu quả:
+
+### 1. **Sử Dụng Danh Sách Các Service Trong Cấu Hình**
+Bạn có thể lưu danh sách các service và các endpoint tương ứng trong một file cấu hình (ví dụ: JSON hoặc YAML). File này sẽ chứa thông tin về tất cả các service, giúp dễ dàng thêm hoặc sửa các service mà không cần sửa mã nguồn.
+
+**Ví dụ file cấu hình (services.yaml):**
+   ```yaml
+   services:
+     - name: book
+       endpoint: "book:8082"
+     - name: user
+       endpoint: "user:8083"
+     - name: order
+       endpoint: "order:8084"
+     # ... Thêm service mới tại đây
+   ```
+
+### 2. **Đọc File Cấu Hình Và Tự Động Đăng Ký Các Service**
+Đọc file cấu hình và lặp qua danh sách các service để tạo kết nối và đăng ký chúng tự động.
+
+   ```go
+   package main
+
+   import (
+       "context"
+       "log"
+       "net/http"
+       "os"
+       "path/to/your/service/packages"
+       "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+       "google.golang.org/grpc"
+       "google.golang.org/grpc/credentials/insecure"
+       "gopkg.in/yaml.v2"
+       "io/ioutil"
+   )
+
+   type ServiceConfig struct {
+       Name     string `yaml:"name"`
+       Endpoint string `yaml:"endpoint"`
+   }
+
+   type Config struct {
+       Services []ServiceConfig `yaml:"services"`
+   }
+
+   func loadConfig(path string) (*Config, error) {
+       data, err := ioutil.ReadFile(path)
+       if err != nil {
+           return nil, err
+       }
+       var config Config
+       if err := yaml.Unmarshal(data, &config); err != nil {
+           return nil, err
+       }
+       return &config, nil
+   }
+
+   func main() {
+       // Load configuration
+       config, err := loadConfig("services.yaml")
+       if err != nil {
+           log.Fatalf("Không thể tải file cấu hình: %v", err)
+       }
+
+       // Tạo HTTP router để xử lý các request HTTP
+       mux := runtime.NewServeMux()
+
+       // Lặp qua từng service trong cấu hình để tạo kết nối và đăng ký tự động
+       for _, svc := range config.Services {
+           conn, err := grpc.Dial(svc.Endpoint, grpc.WithTransportCredentials(insecure.NewCredentials()))
+           if err != nil {
+               log.Fatalf("Không thể kết nối đến %s server: %v", svc.Name, err)
+           }
+           defer conn.Close()
+
+           // Sử dụng switch hoặc map các hàm đăng ký cho từng service
+           switch svc.Name {
+           case "book":
+               err = book.RegisterBookServiceHandler(context.Background(), mux, conn)
+           case "user":
+               err = user.RegisterUserServiceHandler(context.Background(), mux, conn)
+           case "order":
+               err = order.RegisterOrderServiceHandler(context.Background(), mux, conn)
+           // Thêm các case khác nếu cần
+           default:
+               log.Printf("Service %s không được hỗ trợ", svc.Name)
+               continue
+           }
+
+           if err != nil {
+               log.Fatalf("Không thể đăng ký %s service: %v", svc.Name, err)
+           }
+           log.Printf("Đã đăng ký %s service", svc.Name)
+       }
+
+       // Khởi động server HTTP
+       log.Println("Bắt đầu HTTP gRPC-Gateway server tại :8081")
+       if err := http.ListenAndServe(":8081", mux); err != nil {
+           log.Fatalf("Không thể khởi động HTTP server: %v", err)
+       }
+   }
+   ```
+
+### 3. **Giảm Thiểu Mã Dư Thừa Bằng Cách Dùng Reflection**
+Nếu bạn có thể sử dụng reflection, bạn có thể ánh xạ tự động các hàm đăng ký mà không cần gọi thủ công từng hàm. Tuy nhiên, việc này có thể phức tạp và cần thử nghiệm cẩn thận.
+
+### 4. **Theo Dõi Và Quản Lý Service**
+Khi có tới 100 service, bạn có thể gặp phải vấn đề với tài nguyên (như giới hạn kết nối hoặc bộ nhớ). Hãy đảm bảo:
+- **Sử dụng các công cụ giám sát** để theo dõi hiệu suất.
+- **Giới hạn kết nối đồng thời** nếu cần thiết.
+- **Tối ưu hóa cấu hình gRPC và HTTP server** để xử lý số lượng lớn service hiệu quả.
+
+### Tóm lại
+Bằng cách lưu trữ cấu hình trong một file và sử dụng cấu trúc mã linh hoạt, bạn có thể quản lý số lượng lớn service mà không phải sửa mã nguồn mỗi khi thêm service mới.
