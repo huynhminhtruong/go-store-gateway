@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -26,7 +27,12 @@ type Config struct {
 }
 
 func LoadServices(path string) (*Config, error) {
-	data, err := os.ReadFile(path)
+	baseDir, err := os.Getwd()
+	if err != nil {
+		return nil, err
+	}
+	fullPath := filepath.Join(baseDir, path)
+	data, err := os.ReadFile(fullPath)
 	if err != nil {
 		return nil, err
 	}
