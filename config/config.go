@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/huynhminhtruong/go-store-services/book-service/src/services/book"
@@ -37,9 +36,6 @@ func LoadServices(path string) (*Config, error) {
 		return nil, err
 	}
 	fullPath := filepath.Join(baseDir, path)
-	if !strings.HasPrefix(baseDir, ".") {
-		fullPath = filepath.Join(root, fullPath)
-	}
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
 		return nil, err
