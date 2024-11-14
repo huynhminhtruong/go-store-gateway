@@ -9,7 +9,7 @@ COPY . $GOPATH/src
 WORKDIR $GOPATH/src
 
 # Build application
-RUN CGO_ENABLED=0 go build -v -o /$APP_NAME $GOPATH/src/$APP_NAME/$CMD_PATH
+RUN CGO_ENABLED=0 go build -v -o /$APP_NAME $GOPATH/src/$CMD_PATH
 
 ## Run Stage ##
 FROM alpine:3.14
