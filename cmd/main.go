@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	// TODO get based directory
 	// Load services config
 	serviceCfg, err := config.LoadServices("services.yaml")
 	if err != nil {
