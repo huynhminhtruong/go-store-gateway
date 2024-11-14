@@ -26,12 +26,16 @@ type Config struct {
 	Services []ServiceConfig `yaml:"services"`
 }
 
+const (
+	configDir = "config"
+)
+
 func LoadServices(path string) (*Config, error) {
 	baseDir, err := os.Getwd()
 	if err != nil {
 		return nil, err
 	}
-	fullPath := filepath.Join(baseDir, path)
+	fullPath := filepath.Join(baseDir, configDir, path)
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
 		return nil, err
