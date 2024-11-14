@@ -26,10 +26,6 @@ type Config struct {
 	Services []ServiceConfig `yaml:"services"`
 }
 
-const (
-	root = "."
-)
-
 func LoadServices(path string) (*Config, error) {
 	baseDir, err := os.Getwd()
 	if err != nil {
