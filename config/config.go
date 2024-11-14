@@ -61,7 +61,6 @@ func RegisterService(mux *runtime.ServeMux, config *Config) *runtime.ServeMux {
 			// Register Book Service
 			err = book.RegisterBookServiceHandlerFromEndpoint(context.Background(), mux, srv.Endpoint, opts)
 		case "user":
-
 			// Create a client connection to the gRPC server we just started
 			// This is where the gRPC-Gateway proxies the requests
 			opts := []grpc.DialOption{
@@ -71,10 +70,10 @@ func RegisterService(mux *runtime.ServeMux, config *Config) *runtime.ServeMux {
 			err = user.RegisterUserServiceHandlerFromEndpoint(context.Background(), mux, srv.Endpoint, opts)
 		default:
 			log.Printf("Not support %v service", srv.Name)
+			continue
 		}
 		if err != nil {
 			log.Printf("Failed to register gateway server for %v service: %v", srv.Name, err)
-			continue
 		}
 	}
 	return mux
