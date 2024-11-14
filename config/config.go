@@ -37,16 +37,26 @@ func LoadServices(path string) (*Config, error) {
 	return &config, nil
 }
 
-func RegisterService(mux *runtime.ServeMux, opts []grpc.DialOption, config *Config) *runtime.ServeMux {
-	for _, srv := range config.Services {
-		log.Println(srv)
+func RegisterService(mux *runtime.ServeMux, config *Config) *runtime.ServeMux {
 
+	for _, srv := range config.Services {
 		var err error
 		switch srv.Name {
 		case "book":
+			// Create a client connection to the gRPC server we just started
+			// This is where the gRPC-Gateway proxies the requests
+			opts := []grpc.DialOption{
+				grpc.WithTransportCredentials(insecure.NewCredentials()),
+			}
 			// Register Book Service
 			err = book.RegisterBookServiceHandlerFromEndpoint(context.Background(), mux, srv.Endpoint, opts)
 		case "user":
+
+			// Create a client connection to the gRPC server we just started
+			// This is where the gRPC-Gateway proxies the requests
+			opts := []grpc.DialOption{
+				grpc.WithTransportCredentials(insecure.NewCredentials()),
+			}
 			// Register User Service
 			err = user.RegisterUserServiceHandlerFromEndpoint(context.Background(), mux, srv.Endpoint, opts)
 		default:
