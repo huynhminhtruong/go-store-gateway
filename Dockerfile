@@ -17,7 +17,7 @@ FROM alpine:3.14
 ENV APP_NAME go-store-gateway
 COPY --from=build-env /$APP_NAME .
 # Copy config folder
-COPY --from=build-env $GOPATH/src/$APP_NAME/config config
+COPY --from=build-env $GOPATH/src/config config
 
 EXPOSE 8081
 
