@@ -7,9 +7,12 @@ require (
 	github.com/huynhminhtruong/go-store-services/book-service v0.0.0-20241106181111-ab87d6e6441b
 	github.com/huynhminhtruong/go-store-user v0.0.0-20241108153828-731dec68dcb4
 	google.golang.org/grpc v1.68.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
+	github.com/kr/text v0.2.0 // indirect
+	github.com/rogpeppe/go-internal v1.13.1 // indirect
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.19.0 // indirect

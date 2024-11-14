@@ -1,0 +1,5 @@
+services:
+  - name: book
+    endpoint: "book:8082"
+  - name: user
+    endpoint: "user:8083"
